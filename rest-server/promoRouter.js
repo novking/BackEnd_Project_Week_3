@@ -1,38 +1,58 @@
 var express = require('express');
 var Router = express.Router();
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var Promo = require('../models/promotions');
+
 Router.use(bodyParser.json());
 
 Router.route('/')
-.all (function(req, res, next){
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    next();
-})
+
 .get (function(req, res, next){
-    res.end("Will get all the info about promo")
+    Promo.find({}, function(err, promo){
+        if err throw err;
+        res.json(promo);
+    });
 })
 .post (function(req, res, next){
-    res.end("Will create a promo of " + req.body.name)
+    Promo.create(req.body, function(err, promo){
+        if err throw err;
+        var id = promo._id;
+        console.log('Promotion created!');
+        res.writeHead(200, {
+            'Content-Type': 'text/plain'
+        });
+        res.end('Promo ID is:' + id);
+    });
 })
 .delete (function (req, res){
-    res.end("Will delete all the prome. Sad face :( ")
+    Promo.remove({},function(err, promo){
+        if err throw err;
+        res.json(promo);
+    });
 })
 ;
 
-Router.all('/:promoId', function(req, res, next){
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    next();
-})
+Router
 .get('/:promoId', function(req, res){
-    res.end('will give your a secret promo: ' + req.params.promoId +'. and you are welcome')
+    Promo.findById(req.params.promoId, function(err, promo){
+        if err throw err;
+        res.json(promo);
+    });
 })
+
 .put('/:promoId', function(req, res){
-    res.write('Updating promo: ' + req.params.promoId + '\n');
-    res.end('Will update the promo: ' + req.body.name + 
-            ' with details: ' + req.body.description);
+    Promo.findByIdAndUpdate(req.params.promoId, {$set: req.body}, {new: true}, function(err, promo){
+        if err throw err;
+        res.json(promo);
+    });
 })
+
 .delete('/:promoId', function(req, res){
-    res.end('Deleting promo: ' + req.params.promoId);
+    Promo.findByIdAndRemove(req.params.promoId, function(err, promo){
+        if err throw err;
+        res.json(promo);
+    });
 });
 
 module.exports = Router

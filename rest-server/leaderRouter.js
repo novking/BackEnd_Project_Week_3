@@ -1,39 +1,60 @@
 var express = require('express');
 var Router = express.Router();
+var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var Leadership = require('../models/leadership');
+
+
 Router.use(bodyParser.json());
-Router.use(function(req, res, next){
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    next();
-})
+
 
 Router.route('/')
 .get(function(req,res,next){
-        res.end('Will send all the leadership to you');
+    Leadership.find({}, function(err, leaders){
+        if err throw err;
+        res.json(leaders);
+    });
 })
 
 .post(function(req, res, next){
-    res.end('Will add leader: ' + req.body.name);    
+    Leadership.create(req.body, function(err,leader){
+        if err throw err;
+        console.log('Leadership created!');
+        res.writeHead(200, {
+            'Content-Type': 'text/plain'
+        });
+        res.end('Leader created with id: '+ leader._id);
+    });
 })
 
 .delete(function(req, res, next){
-        res.end('Deleting all leaders');
+        Leadership.remove({}, function(err, leader){
+            if err throw err;
+            res.json(leader);
+        });
 });
 
 
 Router.route('/:LID')
 .get(function(req,res,next){
-        res.end('Will send ' + req.params.LID + 'leader\'s info to you');
+        Leadership.findById(req.params.LID, function(err, leader){
+            if err throw err;
+            res.json(leader);
+        });
 })
 
 .put(function(req, res, next){
-        res.write('Updating leader: ' + req.params.LID + '\n');
-    res.end('Will update the leader: ' + req.body.name + 
-            ' with details: ' + req.body.description);
+        Leadership.findByIdAndUpdate(req.param.LID, {$set: req.body},{new:true}, function(err, leader){
+            if err throw err;
+            res.json(leader);
+        });
 })
 
 .delete( function(req, res){
-        res.end('Deleting leader: ' + req.params.LID);
+        Leadership.findByIdAndRemove(req.params.LID, function(err, leader){
+            if err throw err;
+            res.json(leader);
+        });
 });
 
 
