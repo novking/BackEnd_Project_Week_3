@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- saved from url=(0120)https://s3.amazonaws.com/coursera-uploads/peer-review/LgWwihnoEeWDtQoum3sFeQ/492adc2b7c4513883279bb922870548b/game2.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>Fun Game</title>
+       
+    <style type="text/css"></style></head>
+    <body style="background: darkorange;">
+    
+     <script>
+        var target;            
+        var guess_input_text;   
+        var finished = false;   
+        var guesses = 0;
+        var aRainbow= ["Aqua" , "Black" , "Blue", "DarkOrange", "Orange", "Gold", "SpringGreen"].sort();
+
+         var b = document.getElementsByTagName("body")[0];
+            b.style.background='white';
+        function do_game() {
+            var rn= Math.floor(Math.random() * aRainbow.length);
+            target = aRainbow[rn];
+            alert("Target color is: " + target);
+            while (!finished) {
+                guess_input_text = prompt("Please pick a color from the following: "+aRainbow);
+                guesses += 1;   
+                
+                finished = check_guess();
+            }
+        }
+
+        function check_guess() {
+            if (aRainbow.indexOf(guess_input_text)<0) {
+                alert("The color you picked is not in our listed options. Sorry, try again.");
+                return false;
+            }
+            
+            if ((guess_input_text > target)) {
+                alert("Your pick is alphabetically higher than the target");
+                return false;
+            }
+            if (guess_input_text < target) {
+                alert("Your pick is alphabetically lower than the target");
+                return false;
+            }
+            
+            if(guess_input_text === target){
+                 var b = document.getElementsByTagName("body")[0];
+            b.style.background=target;
+                alert("You got it! The color is " +target+" You guessed "+guesses+" times. Not bad.");
+            
+            return true;   }
+
+           
+            
+            
+        }
+
+        do_game();
+         
+       
+    </script>
+
+</body></html>
