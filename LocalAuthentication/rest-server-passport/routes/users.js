@@ -5,8 +5,14 @@ var User = require('../models/user');
 var Verify = require('./verify');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/', Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next) {
+    User.find({}, function(err, resp){
+        if (err) throw err;
+        else{
+            res.status(200).json(resp);
+        }
+    });
+  //res.send('respond with a resource');
 });
 
 router.post('/register', function(req, res){

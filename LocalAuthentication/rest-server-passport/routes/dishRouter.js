@@ -15,7 +15,7 @@ router.route('/')
         });
 })
 
-.post(Verify.verifyOrdinaryUser, function(req, res, next){
+.post(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
     Dishes.create(req.body, function(err, dish){
         if (err) return next(err);
         console.log('Dish created');
@@ -29,7 +29,8 @@ router.route('/')
     });
 })
 
-.delete(Verify.verifyOrdinaryUser, function(req, res, next){
+.delete(Verify.verifyOrdinaryUser)
+.delete(Verify.verifyAdmin, function(req, res, next){
         Dishes.remove({}, function(err, resp){
             if (err) throw err;
            res.json(resp); 
@@ -38,21 +39,21 @@ router.route('/')
 
 router.route('/:dishId')
 
-.get(function(req,res,next){
+.get(Verify.verifyOrdinaryUser,function(req,res,next){
         Dishes.findById(req.params.dishId, function(err, dish){
             if (err) throw err;
             res.json(dish);
         });
 })
 
-.put(function(req, res, next){
+.put(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
        Dishes.findByIdAndUpdate(req.params.dishId, {$set: req.body}, {new: true}, function(err, dish){
            if (err) throw err;
            res.json(dish);
        });
 });
 
-router.delete('/:dishId', function(req, res){
+router.delete('/:dishId',Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res){
         Dishes.findByIdAndRemove(req.params.id, function(err, resp){
             if (err) throw err;
             res.json(resp);
@@ -60,30 +61,30 @@ router.delete('/:dishId', function(req, res){
 });
 
 router.route('/:dishId/comments')
-.get(function(req, res, next){
+.get(Verify.verifyOrdinaryUser,function(req, res, next){
     Dishes.findById(req.params.dishId, function(err, dish){
         if (err) throw err;
         res.json(dish.comments);
     });
 })
-.post(function(req, res, next){
+.post(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
     Dishes.findById(req.params.dishId, function(err, dish){
         if (err) throw err;
         dish.comments.push(req.body);
         dish.save(function(err, dish){
-            if err throw err;
+            if (err) throw err;
             res.json(dish);
         });
     });
 })
-.delete(function(req, res, next){
+.delete(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
     Dishes.findById(req.params.dishId, function(err, dish){
         if (err) throw err;
         for (var i = (dish.comments.length-1); i>=0; i--){
             dish.comments.id(dish.comments[i]._id).remove();
         }
         dish.save(function(err, result){
-            if err throw err;
+            if (err) throw err;
             res.writeHead(200, {
                 'Content-Type': 'text/plain'
             });
@@ -93,31 +94,31 @@ router.route('/:dishId/comments')
 });
 
 
-dishRouter.route('/:dishId/commments/:commentId')
-.get(function(req, res, next){
+router.route('/:dishId/commments/:commentId')
+.get(Verify.verifyOrdinaryUser,function(req, res, next){
     Dishes.findById(req.params.dishId, function(err, dish){
         if (err) throw err;
         res.json(dish.comments.id(req.params.commentId));
     });
 })
-.put(function(req, res, next){
+.put(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
     Dishes.findById(req.params.dishId, function(err, dish){
         if (err) throw err;
         dish.comments.id(req.params.commentId).remove();
         dish.comments.push(req.body);
         dish.save(function(err, dish){
-            if err throw err;
+            if (err) throw err;
             console.log('Updated Comments');
             res.json(dish);
         });
     });
 })
-.delete(function(req, res, next){
+.delete(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
     Dishes.findById(req.params.dishId, function(err, dish){
         if (err) throw err;
         dish.comments.id(req.params.commentId).remove();
         dish.save(function (err, resp){
-            if err throw err;
+            if (err) throw err;
             res.json(resp);
         });
     });

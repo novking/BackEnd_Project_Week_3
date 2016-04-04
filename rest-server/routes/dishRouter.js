@@ -17,7 +17,7 @@ router.route('/')
 
 .post(function(req, res, next){
     Dishes.create(req.body, function(err, dish){
-        if (err) return next(err);
+        if (err) throw err;
         console.log('Dish created');
         var id = dish._id;
         
@@ -71,7 +71,7 @@ router.route('/:dishId/comments')
         if (err) throw err;
         dish.comments.push(req.body);
         dish.save(function(err, dish){
-            if err throw err;
+            if (err) throw err;
             res.json(dish);
         });
     });
@@ -83,7 +83,7 @@ router.route('/:dishId/comments')
             dish.comments.id(dish.comments[i]._id).remove();
         }
         dish.save(function(err, result){
-            if err throw err;
+            if (err) throw err;
             res.writeHead(200, {
                 'Content-Type': 'text/plain'
             });
@@ -93,7 +93,7 @@ router.route('/:dishId/comments')
 });
 
 
-dishRouter.route('/:dishId/commments/:commentId')
+router.route('/:dishId/commments/:commentId')
 .get(function(req, res, next){
     Dishes.findById(req.params.dishId, function(err, dish){
         if (err) throw err;
@@ -106,7 +106,7 @@ dishRouter.route('/:dishId/commments/:commentId')
         dish.comments.id(req.params.commentId).remove();
         dish.comments.push(req.body);
         dish.save(function(err, dish){
-            if err throw err;
+            if (err) throw err;
             console.log('Updated Comments');
             res.json(dish);
         });
@@ -117,7 +117,7 @@ dishRouter.route('/:dishId/commments/:commentId')
         if (err) throw err;
         dish.comments.id(req.params.commentId).remove();
         dish.save(function (err, resp){
-            if err throw err;
+            if (err) throw err;
             res.json(resp);
         });
     });
